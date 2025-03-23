@@ -12,9 +12,35 @@
         </div>
         <h2 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">LuxStay</h2>
       </div>
-
     </div>
 
+    <div v-if="authStore.isAuthenticated" class="flex items-center gap-4">
+      <span class="text-sm text-gray-600">مرحباً {{ authStore.user?.name }}</span>
+      <button @click="logout" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">
+        تسجيل الخروج
+      </button>
+    </div>
   </header>
   <RouterView />
 </template>
+
+<script setup lang="ts">
+import { useAuthStore } from './stores/auth';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+onMounted(async () => {
+  // If user is authenticated, fetch profile data
+  if (authStore.isAuthenticated) {
+    await authStore.fetchUserProfile();
+  }
+});
+
+const logout = () => {
+  authStore.logout();
+  router.push('/');
+};
+</script>
